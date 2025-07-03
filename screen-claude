@@ -1,0 +1,14 @@
+#!/bin/bash
+
+SESSION_NAME="screen-claude"
+
+# Check if the screen session already exists
+if screen -list | grep -q "$SESSION_NAME"; then
+    # Session exists, attach to it
+    echo "Attaching to existing screen-claude session..."
+    screen -r "$SESSION_NAME"
+else
+    # Session doesn't exist, create a new one
+    echo "Creating new screen-claude session..."
+    screen -S "$SESSION_NAME" -c /dev/null bash -c 'claude; exit'
+fi
