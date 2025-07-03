@@ -1,14 +1,17 @@
 #!/bin/bash
 
-SESSION_NAME="screen-claude"
+# Create session name based on current directory
+DIR_HASH=$(echo "$PWD" | md5sum | cut -c1-8)
+SESSION_NAME="claude-$DIR_HASH"
 
-# Check if the screen session already exists
-if screen -list | grep -q "$SESSION_NAME"; then
+# Check if the tmux session already exists
+if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
     # Session exists, attach to it
-    echo "Attaching to existing screen-claude session..."
-    screen -r "$SESSION_NAME"
+    echo "Attaching to existing tmux session for $PWD..."
+    tmux attach-session -t "$SESSION_NAME"
 else
     # Session doesn't exist, create a new one
-    echo "Creating new screen-claude session..."
-    screen -S "$SESSION_NAME" -c /dev/null bash -c 'claude; exit'
+    echo "Creating new tmux session for $PWD..."
+    tmux new-session -d -s "$SESSION_NAME" -c "$PWD" "claude $*"
+    tmux attach-session -t "$SESSION_NAME"
 fi
